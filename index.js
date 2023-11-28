@@ -33,7 +33,7 @@ app.use("/api/accomodations", placeRoute);
 // booking routes
 app.use("/api/book", bookingRoute);
 
-app.listen(process.env.PORT, () => {
+app.listen(4000, () => {
   console.log("App is Listening at 4000");
 });
 
