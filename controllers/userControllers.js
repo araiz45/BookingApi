@@ -3,7 +3,6 @@ const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const bcrpytSalt = bcryptjs.genSaltSync(10);
-const jwtSecret = "askldjflksadjf;lkasldkfj;lskdjflskdjf;lasd";
 module.exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -27,7 +26,7 @@ module.exports.login = async (req, res) => {
       if (passOk) {
         jwt.sign(
           { email: userDoc.email, id: userDoc._id, name: userDoc.name },
-          jwtSecret,
+          process.env.JWT_SECRET,
           {},
           (err, token) => {
             if (err) throw err;
@@ -50,7 +49,7 @@ module.exports.profile = (req, res) => {
   const { token } = req.cookies;
   try {
     if (token) {
-      jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+      jwt.verify(token, process.env.JWT_SECRET, {}, async (err, userData) => {
         if (err) throw err;
         const { name, email, _id } = await UserModel.findById(userData.id);
         res.json({ name, email, _id });

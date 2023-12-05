@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const jwtSecret = "askldjflksadjf;lkasldkfj;lskdjflskdjf;lasd";
 const PlaceModel = require("../models/Places.js");
 module.exports.addPlaces = async (req, res) => {
   const { token } = req.cookies;
@@ -16,10 +15,8 @@ module.exports.addPlaces = async (req, res) => {
     price,
   } = req.body;
   try {
-    // console.log(req.body, token);
-    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    jwt.verify(token, process.env.JWT_SECRET, {}, async (err, userData) => {
       if (err) throw err;
-      console.log(addedPhotos);
       const placeDoc = await PlaceModel.create({
         owner: userData.id,
         title,
@@ -33,7 +30,6 @@ module.exports.addPlaces = async (req, res) => {
         maxGuests,
         price,
       });
-      // res.json(placeDoc);
       console.log(placeDoc);
       res.json("done");
     });
@@ -45,8 +41,9 @@ module.exports.addPlaces = async (req, res) => {
 module.exports.getPlaces = (req, res) => {
   const { token } = req.cookies;
   try {
-    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    jwt.verify(token, process.env.JWT_SECRET, {}, async (err, userData) => {
       const { id } = userData;
+      const data = await PlaceModel.find({ owner: id });
       res.json(await PlaceModel.find({ owner: id }));
     });
   } catch (error) {
@@ -78,7 +75,7 @@ module.exports.editPlaces = async (req, res) => {
     price,
   } = req.body;
   try {
-    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    jwt.verify(token, process.env.JWT_SECRET, {}, async (err, userData) => {
       if (err) throw err;
       const placeDoc = await PlaceModel.findById(id);
       if (userData.id === placeDoc.owner.toString()) {
